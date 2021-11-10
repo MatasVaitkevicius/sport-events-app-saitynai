@@ -1,0 +1,53 @@
+version: "3.5"
+services:
+  # PHP Service
+  sport-events-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+      target: sport-events-app
+    container_name: sport-events-app
+    environment:
+      EXAMPLE_KEY: example-value
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./config/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app_network
+
+  # Nginx Service
+  sport-events-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+      target: sport-events-webserver
+    container_name: sport-events-webserver
+    ports:
+      - "98:80"
+    volumes:
+      - ./:/var/www
+      - ./config/nginx/conf.d/app.local.conf:/etc/nginx/conf.d/app.conf
+    networks:
+      - app_network
+
+  #PostgreSQL Service
+  sport-events-db:
+    image: postgres:12.2
+    container_name: sport-events-db
+    ports:
+      - "5438:5432"
+    environment:
+      POSTGRES_DB: sport-events-db
+      POSTGRES_PASSWORD: Dsa456489vxcllsdD
+      POSTGRES_USER: sport
+      SERVICE_TAGS: dev
+      SERVICE_NAME: sport-events-pg
+    networks:
+      - app_network
+
+# Docker Networks
+networks:
+  app_network:
+    name: app_network
+    driver: bridge
