@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Type;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,7 @@ class TypeController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
+        $this->middleware('auth.role:admin,user');
     }
 
     /**
@@ -35,12 +37,13 @@ class TypeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|max:50|string',
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
         ]);
 
-        $type = Type::create($validated);
+        $user = User::create($validated);
 
-        return $type;
+        return $user;
     }
 
     /**

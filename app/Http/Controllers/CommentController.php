@@ -15,7 +15,7 @@ class CommentController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth.role:admin,user');
     }
 
     /**

@@ -27,7 +27,6 @@ use App\Http\Controllers\AuthController;
 
 Route::group([
     'middleware' => 'api',
-    'prefix' => 'auth'
 
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
@@ -40,4 +39,5 @@ Route::group([
     Route::resource('types', 'App\Http\Controllers\TypeController');
     Route::resource('types.events', 'App\Http\Controllers\EventController');
     Route::resource('types.events.comments', 'App\Http\Controllers\CommentController');
+    Route::resource('users', 'App\Http\Controllers\UserController');
 });

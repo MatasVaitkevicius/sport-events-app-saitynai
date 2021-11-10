@@ -12,6 +12,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Request;
+
 
 class Handler extends ExceptionHandler
 {
@@ -43,6 +46,15 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->renderable(function (Exception $e, $request) {
+            $routes = Route::getRoutes();
+            $request = Request::create($request->path());
+
+            try {
+                $routes->match($request);
+            } catch (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e) {
+                return response()->json(['error' => 'Not Found!'], 404);
+            }
+
             try {
                 //Access token from the request
                 $token = JWTAuth::parseToken();
@@ -59,8 +71,6 @@ class Handler extends ExceptionHandler
                 return $this->unauthorized('Please, attach a Bearer Token to your request');
             }
         });
-
-        return response()->json(['error' => 'Not Found!'], 404);
 
         $this->reportable(function (Throwable $e) {
         });

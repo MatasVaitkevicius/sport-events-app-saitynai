@@ -29,6 +29,13 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
         ]);
 
+        DB::table('users')->insert([ //1
+            'name' => "noRoleUser",
+            'email' => "noRoleUser@gmail.com",
+            'password' => Hash::make('password123'),
+            'role' => '',
+        ]);
+
         DB::table('types')->insert([ //1
             'name' => "Type 1",
         ]);

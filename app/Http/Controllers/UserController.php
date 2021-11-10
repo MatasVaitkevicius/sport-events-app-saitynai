@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -25,12 +24,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return response([
-            'events' =>
-            UserResource::collection($users),
-            'message' => 'Successful'
-        ], 200);
+        return User::all();
     }
 
     /**
@@ -41,27 +35,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->all();
+        $validated = $request->validate([
+            'email' => 'required|email',
+        ]);
 
-        // $validator = Validator::make($data, [
-        //     'name' => 'required|max:50',
-        //     'age' => 'required|max:50',
-        //     'job' => 'required|max:50',
-        //     'salary' => 'required|50'
-        // ]);
+        $type = Type::create($validated);
 
-        // if($validator->fails()){
-        //     return response(['error' => $validator->errors(),
-        //     'Validation Error']);
-        // }
-
-        $user = User::create($data);
-
-        return response([
-            'user' => new
-                UserResource($user),
-            'message' => 'Success'
-        ], 200);
+        return $type;
     }
 
     /**
@@ -72,8 +52,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response(['user' => new
-            UserResource($user), 'message' => 'Success'], 200);
+        return $user;
     }
 
     /**
@@ -85,10 +64,13 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $user->update($request->all());
+        $validated = $request->validate([
+            'email' => 'required|email',
+        ]);
 
-        return response(['user' => new
-            UserResource($user), 'message' => 'Success'], 200);
+        $user->update($validated);
+
+        return $user;
     }
 
     /**
@@ -99,8 +81,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
-
-        return response(['message' => 'User deleted']);
+        if ($user->delete()) {
+            return response('', 204);
+        }
     }
 }
